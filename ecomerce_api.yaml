@@ -1,0 +1,458 @@
+openapi: 3.0.3
+info:
+  title: Ecommerce API
+  version: 1.0.0
+  description: >-
+    This is a e-commerce application REST API that allows users to perform various CRUD operations. Most aspects of functionality required authentication before it can be operated appropriately. Thus, registration is necessary. Some operations are done behind the scene for the convenience of users. For an instance, cart is created and removed from the database automatically when items added into a cart and checkout respectively. 
+paths:
+  /product:
+    summary: Get all product data
+    description: This path is used to retrieve all the product data from database.
+    get:
+      summary: Retrieve all product information.
+      description: Retrieve data of all products from database.
+      operationId: get_product
+      responses:
+        '200':
+          description: A successful example
+          content:
+            application/json:
+              examples:
+                product:
+                  value: |-
+                    [
+                        {
+                            "product_id": 1,
+                            "name": "test1",
+                            "price": 10,
+                            "description": "for test1",
+                            "created": "2023-06-09T23:00:00.000Z",
+                            "modified": null
+                        },
+                        {
+                            "product_id": 2,
+                            "name": "test2",
+                            "price": 20,
+                            "description": "for test2",
+                            "created": "2023-06-09T23:00:00.000Z",
+                            "modified": null
+                        }
+                    ]
+      tags:
+        - Product
+  /product/{productId}:
+    summary: Get information of a specific product.
+    description: This path is used to retrieve information of a specific product by its id.
+    get:
+      summary: Get information of a specific product.
+      description: This path is to retrieve information of a specific product by its id.
+      operationId: get_product_by_productId
+      parameters:
+        - name: productId
+          in: path
+          description: The id of the product
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: A successful example
+          content:
+            application/json:
+              examples:
+                product by productId:
+                  value: |-
+                    [
+                        {
+                            "product_id": 1,
+                            "name": "test1",
+                            "price": 10,
+                            "description": "for test1",
+                            "created": "2023-06-09T23:00:00.000Z",
+                            "modified": null
+                        }
+                    ]
+        '404':
+          description: Invalid Argument
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Invalid Argument:
+                  value: Invalid Argument Provided
+      tags:
+        - Product
+  /auth/register:
+    summary: Register a new user.
+    description: This path is used to register a new user.
+    post:
+      summary: Register a new user.
+      description: This path is used to register a new user.
+      operationId: auth_register
+      requestBody:
+        description: A new user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Regiter'
+        required: true
+      responses:
+        '201':
+          description: A successful sample response
+          content:
+            application/json:
+              examples:
+                register:
+                  value: Registered successfully.
+        '400':
+          description: Invalid Argument
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Invalid Argument:
+                  value: Invalid Argument Provided
+      tags:
+        - Authentication
+  /auth/login:
+    summary: Login user.
+    description: This path is used to login a user.
+    post:
+      summary: Login user.
+      description: This path is used to login a user.
+      operationId: auth_login
+      requestBody:
+        description: A new order object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '201':
+          description: A successful sample response
+          content:
+            application/json:
+              examples:
+                Login:
+                  value: |-
+                    {
+                        "info": "Hi, Eason! It's good to see you. Happy shopping with us!"
+                    }
+        '401':
+          description: Incorrect
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Invalid Argument:
+                  value: Login failed. Incorrect username or password.
+      tags:
+        - Authentication
+  /user/{userId}:
+    summary: Get a user's own information.
+    description: This path is used for users to retrieve their own information.
+    get:
+      summary: Get a user's own information.
+      description: This path is used for users to retrieve their own information.
+      operationId: get_user_info
+      parameters:
+        - name: userId
+          in: path
+          description: The id of the user.
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successful Response Sample
+          content:
+            application/json:
+              examples:
+                Successful Response Sample:
+                  value: '{ user information }'
+        '400':
+          description: Unauthorized Request
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Unauthorized Request:
+                  value: Access denied.
+      tags:
+        - User
+    put:
+      summary: Change a user's own account information.
+      description: >-
+        This path is used to allow users to change their own account
+        information.
+      operationId: put_user_info
+      parameters:
+        - name: userId
+          in: path
+          description: The id of the user.
+          required: true
+          schema:
+            type: number
+      responses:
+        '201':
+          description: Successful Response Sample
+          content:
+            application/json:
+              examples:
+                Successful Response Sample:
+                  value: '{ user information }'
+        '400':
+          description: Unauthorized Request
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Unauthorized Request:
+                  value: Access denied.
+        default:
+          description: Default error sample response
+      tags:
+        - User
+  /cart:
+    summary: User's shopping cart.
+    description: This path is used to get and edit a user's own cart items.
+    post:
+      summary: Add items to a user's own cart.
+      description: Allow users to add items to their own cart.
+      operationId: post_cart
+      responses:
+        '201':
+          description: Successful Response Sample
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful Response Sample:
+                  value: The item has been placed in cart.
+        '404':
+          description: Product Not Found
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Unauthorized Request:
+                  value: Product Not Found
+      tags:
+        - Cart
+    get:
+      summary: Get all information of a user's cart from database.
+      description: >-
+        This path is used to retrieve all information of a user's cart from
+        database.
+      operationId: get_cart
+      responses:
+        '200':
+          description: Successful Response Sample
+          content:
+            application/json:
+              examples:
+                Successful Response Sample:
+                  value: |-
+                    [
+                        {
+                            "cart_id": 6,
+                            "cart_item_id": 31,
+                            "product_name": "test2",
+                            "price": 20,
+                            "description": "for test2"
+                        }
+                    ]
+        '204':
+          description: Empty Cart
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Empty Cart:
+                  value: Cart is empty
+      tags:
+        - Cart
+    delete:
+      summary: Delete all items in a user's cart.
+      description: This will allow users to remove all items from their cart.
+      operationId: delete_cart
+      responses:
+        '204':
+          description: Remove All Items From Cart
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Remove All Items From Cart:
+                  value: Already removed all items. The cart is now empty.
+      tags:
+        - Cart
+  /cart/{cartItemId}:
+    summary: Remove a specific item from a user's cart.
+    description: This path is to target a specific item in a user's cart.
+    delete:
+      summary: Remove a specific item from cart.
+      description: This path is to remove a specific item from a user's cart.
+      operationId: delete_cart_item
+      parameters:
+        - name: cartItemId
+          in: path
+          description: The id of the cart item.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The Item Removed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                The Item Removed:
+                  value: The item has been removed.
+        '404':
+          description: Item Not Found
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Item Not Found:
+                  value: Item Not Found.
+      tags:
+        - Cart
+  /orders/mine:
+    summary: Retrieve information of a user's own order records from database.
+    description: >-
+      This path is used to retrieve information of a user's own order records
+      from database.
+    get:
+      summary: Retrieve all records of orders of a user.
+      description: This path is to retrieve all order records of a user's own.
+      operationId: get_order_all
+      responses:
+        '200':
+          description: Successful Response Sample
+          content:
+            application/json:
+              examples:
+                Successful Response Sample:
+                  value: |-
+                    [
+                        {
+                            "order_id": 1,
+                            "status": "pending",
+                            "created": "2023-06-18T16:37:53.387Z",
+                            "product_name": "test1",
+                            "quantity": 1,
+                            "price": 10,
+                            "description": "for test1"
+                        },
+                        {
+                            "order_id": 1,
+                            "status": "pending",
+                            "created": "2023-06-18T16:37:53.387Z",
+                            "product_name": "test2",
+                            "quantity": 1,
+                            "price": 20,
+                            "description": "for test2"
+                        }
+                    ]
+      tags:
+        - Orders
+  /orders/mine/{orderId}:
+    summary: Retrieve a specific order.
+    description: This path is used to retrieve a specific record of a user's own order.
+    get:
+      summary: Retrieve a specific record of order.
+      description: This path is used to retrieve a specific record of a user's own order.
+      operationId: get_order_one
+      parameters:
+        - name: orderId
+          in: path
+          description: The id of the order.
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successful Response Sample
+          content:
+            application/json:
+              examples:
+                Successful Response Sample:
+                  value: |-
+                    [
+                        {
+                            "order_id": 1,
+                            "status": "pending",
+                            "created": "2023-06-18T16:37:53.387Z",
+                            "product_name": "test1",
+                            "quantity": 1,
+                            "price": 10,
+                            "description": "for test1"
+                        }
+                    ]
+        '404':
+          description: Order Not Found
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Order Not Found:
+                  value: Order Not Found.
+      tags:
+        - Orders
+  /cart/checkout:
+    summary: Checkout a user's own cart.
+    description: This path is used to check out a user's own cart.
+    post:
+      summary: Check out a user's own cart.
+      description: This path is used to check out a user's own cart.
+      operationId: cart_checkout
+      requestBody:
+        description: Check out
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Checkout'
+        required: true
+      responses:
+        '201':
+          description: Successful Response Sample
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful Response Sample:
+                  value: >-
+                    Hi, Eason. Your order has been placed. Thanks for shopping
+                    with us!
+        '400':
+          description: Empty Cart
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Empty Cart:
+                  value: Empty Cart.
+        '402':
+          description: Unsuccessful Payment
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Unsuccessful Payment:
+                  value: Error on payments. Please try again.
+      tags:
+        - Cart
+components:
+  schemas:
+    Regiter:
+      type: object
+      properties:
+        password:
+          type: string
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    Login:
+      type: object
+      properties:
+        password:
+          type: string
+        email:
+          type: string
+    Checkout:
+      type: object
+      properties:
+        orderPayment:
+          type: number
